@@ -20,12 +20,10 @@ public class App {
         EntityManager em = emf.createEntityManager();
         Scanner scanner = new Scanner(System.in);
 
-        // Perulangan membaca input baris demi baris dari sistem otomasi
         while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
             
-            // Validasi Pemutus Loop: Jika input kosong atau server autograding selesai mengirim data,
-            // program akan langsung break agar tidak terkena status Timeout (10 detik)
+            // Pemutus loop yang sangat aman untuk menangani deteksi EOF (End of File) pada server Linux
             if (input == null || input.trim().isEmpty() || input.trim().equals("")) {
                 break;
             }
@@ -68,8 +66,6 @@ public class App {
                     Vehicle vehicle = em.find(Vehicle.class, plateNumber);
                     Parkir area = em.find(Parkir.class, areaName);
 
-                    // Validasi aturan bisnis: Kendaraan & area harus terdaftar, 
-                    // jenis kendaraan harus cocok, dan kapasitas parkir belum penuh
                     if (vehicle != null && area != null) {
                         if (vehicle.getType().equals(area.getAllowed_type()) && area.getVehicles().size() < area.getCapacity()) {
                             vehicle.setParkingArea(area);
@@ -79,14 +75,14 @@ public class App {
                     em.getTransaction().commit();
 
                 } else if (command.equals("display-all")) {
-                    // Mengambil seluruh area parkir diurutkan secara Ascending berdasarkan nama area
+                    // Ambil area diurutkan Ascending berdasarkan nama area
                     List<Parkir> areas = em.createQuery("SELECT p FROM Parkir p ORDER BY p.name ASC", Parkir.class).getResultList();
                     
                     for (Parkir a : areas) {
                         System.out.println(a.toString());
                         
                         List<Vehicle> vehiclesInArea = a.getVehicles();
-                        // Mengurutkan daftar kendaraan di dalam area secara Ascending berdasarkan nomor plat
+                        // Sortir kendaraan di dalam area secara Ascending berdasarkan plate_number
                         Collections.sort(vehiclesInArea, new Comparator<Vehicle>() {
                             @Override
                             public int compare(Vehicle v1, Vehicle v2) {
@@ -107,7 +103,6 @@ public class App {
             }
         }
 
-        // Menutup semua resource koneksi database secara bersih setelah loop selesai
         scanner.close();
         em.close();
         emf.close();
