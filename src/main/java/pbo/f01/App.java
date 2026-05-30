@@ -65,10 +65,13 @@ public class App {
                     Vehicle vehicle = em.find(Vehicle.class, plateNumber);
                     Parkir area = em.find(Parkir.class, areaName);
 
+                    // PERBAIKAN KRUSIAL: Validasi ketat agar tidak NullPointerException
                     if (vehicle != null && area != null) {
-                        if (vehicle.getType().equals(area.getAllowed_type()) && area.getVehicles().size() < area.getCapacity()) {
-                            vehicle.setParkingArea(area);
-                            em.merge(vehicle);
+                        if (vehicle.getType() != null && vehicle.getType().equals(area.getAllowed_type())) {
+                            if (area.getVehicles().size() < area.getCapacity()) {
+                                vehicle.setParkingArea(area);
+                                em.merge(vehicle);
+                            }
                         }
                     }
                     em.getTransaction().commit();
