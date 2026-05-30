@@ -20,8 +20,7 @@ public class App {
         EntityManager em = emf.createEntityManager();
         Scanner scanner = new Scanner(System.in);
 
-        // Menggunakan hasNext() untuk mencegah macet/timeout di server autograding
-        while (scanner.hasNext()) {
+        while (scanner.hasNextLine()) {
             String input = scanner.nextLine();
             
             if (input == null || input.trim().isEmpty()) {
