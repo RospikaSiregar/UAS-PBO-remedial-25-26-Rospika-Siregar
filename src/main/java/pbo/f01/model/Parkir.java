@@ -17,7 +17,6 @@ public class Parkir {
     @Column(name = "capacity")
     private int capacity;
 
-    // Relasi One-to-Many mendeteksi daftar kendaraan yang terparkir di area ini
     @OneToMany(mappedBy = "parkingArea", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Vehicle> vehicles = new ArrayList<>();
 
@@ -29,40 +28,17 @@ public class Parkir {
         this.capacity = capacity;
     }
 
-    public String getName() {
-        return name; 
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAllowed_type() {
-        return allowed_type; 
-    }
-
-    public void setAllowed_type(String allowed_type) {
-        this.allowed_type = allowed_type;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
-    public List<Vehicle> getVehicles() {
-        return vehicles;
-    }
-
-    public void setVehicles(List<Vehicle> vehicles) {
-        this.vehicles = vehicles;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public String getAllowed_type() { return allowed_type; }
+    public void setAllowed_type(String allowed_type) { this.allowed_type = allowed_type; }
+    public int getCapacity() { return capacity; }
+    public void setCapacity(int capacity) { this.capacity = capacity; }
+    public List<Vehicle> getVehicles() { return vehicles; }
+    public void setVehicles(List<Vehicle> vehicles) { this.vehicles = vehicles; }
 
     @Override
     public String toString() {
-        return name + " " + allowed_type + " " + capacity + "|" + (vehicles != null ? vehicles.size() : 0);
+        return this.name + " " + this.allowed_type + " " + this.capacity + "|" + (this.vehicles != null ? this.vehicles.size() : 0);
     }
 }

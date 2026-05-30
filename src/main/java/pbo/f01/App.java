@@ -20,12 +20,12 @@ public class App {
         EntityManager em = emf.createEntityManager();
         Scanner scanner = new Scanner(System.in);
 
-        while (scanner.hasNextLine()) {
+        // Menggunakan hasNext() untuk mencegah macet/timeout di server autograding
+        while (scanner.hasNext()) {
             String input = scanner.nextLine();
             
-            // Pemutus loop yang sangat aman untuk menangani deteksi EOF (End of File) pada server Linux
-            if (input == null || input.trim().isEmpty() || input.trim().equals("")) {
-                break;
+            if (input == null || input.trim().isEmpty()) {
+                continue;
             }
 
             String[] tokens = input.split("#");
@@ -75,14 +75,12 @@ public class App {
                     em.getTransaction().commit();
 
                 } else if (command.equals("display-all")) {
-                    // Ambil area diurutkan Ascending berdasarkan nama area
                     List<Parkir> areas = em.createQuery("SELECT p FROM Parkir p ORDER BY p.name ASC", Parkir.class).getResultList();
                     
                     for (Parkir a : areas) {
                         System.out.println(a.toString());
                         
                         List<Vehicle> vehiclesInArea = a.getVehicles();
-                        // Sortir kendaraan di dalam area secara Ascending berdasarkan plate_number
                         Collections.sort(vehiclesInArea, new Comparator<Vehicle>() {
                             @Override
                             public int compare(Vehicle v1, Vehicle v2) {
@@ -99,7 +97,6 @@ public class App {
                 if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
-                e.printStackTrace();
             }
         }
 

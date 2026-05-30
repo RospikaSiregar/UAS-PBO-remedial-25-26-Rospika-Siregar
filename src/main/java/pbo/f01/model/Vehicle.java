@@ -15,7 +15,6 @@ public class Vehicle {
     @Column(name = "owner", length = 150)
     private String owner;
 
-    // Relasi Many-to-One memetakan penempatan kendaraan ke area parkir tertentu
     @ManyToOne
     @JoinColumn(name = "parking_area_name", referencedColumnName = "name")
     private Parkir parkingArea;
@@ -28,40 +27,17 @@ public class Vehicle {
         this.owner = owner;
     }
 
-    public String getPlate_number() {
-        return plate_number; 
-    }
-
-    public void setPlate_number(String plate_number) {
-        this.plate_number = plate_number;
-    }
-
-    public String getType() {
-        return type; 
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getOwner() {
-        return owner; 
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    public Parkir getParkingArea() {
-        return parkingArea;
-    }
-
-    public void setParkingArea(Parkir parkingArea) {
-        this.parkingArea = parkingArea;
-    }
+    public String getPlate_number() { return plate_number; }
+    public void setPlate_number(String plate_number) { this.plate_number = plate_number; }
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    public String getOwner() { return owner; }
+    public void setOwner(String owner) { this.owner = owner; }
+    public Parkir getParkingArea() { return parkingArea; }
+    public void setParkingArea(Parkir parkingArea) { this.parkingArea = parkingArea; }
 
     @Override
     public String toString() {
-        return plate_number + " " + owner + " " + type;
+        return this.plate_number + " " + this.owner + " " + this.type;
     }
 }
