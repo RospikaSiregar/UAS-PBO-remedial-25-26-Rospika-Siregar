@@ -2,8 +2,6 @@ package pbo.f01;
 
 import java.util.Scanner;
 import java.util.List;
-import java.util.Collections;
-import java.util.Comparator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -65,10 +63,16 @@ public class App {
                     Vehicle vehicle = em.find(Vehicle.class, plateNumber);
                     Parkir area = em.find(Parkir.class, areaName);
 
-                    // PERBAIKAN KRUSIAL: Validasi ketat agar tidak NullPointerException
+                    // Validasi ketat pencegah NullPointerException
                     if (vehicle != null && area != null) {
+                        // Menghitung jumlah kendaraan nyata di area parkir tersebut langsung dari database
+                        Long currentCount = em.createQuery(
+                            "SELECT COUNT(v) FROM Vehicle v WHERE v.parkingArea.name = :areaName", Long.class)
+                            .setParameter("areaName", areaName)
+                            .getSingleResult();
+
                         if (vehicle.getType() != null && vehicle.getType().equals(area.getAllowed_type())) {
-                            if (area.getVehicles().size() < area.getCapacity()) {
+                            if (currentCount < area.getCapacity()) {
                                 vehicle.setParkingArea(area);
                                 em.merge(vehicle);
                             }
@@ -77,19 +81,20 @@ public class App {
                     em.getTransaction().commit();
 
                 } else if (command.equals("display-all")) {
+                    // Mengambil seluruh area parkir, diurutkan Ascending secara alfabetis (A-Z)
                     List<Parkir> areas = em.createQuery("SELECT p FROM Parkir p ORDER BY p.name ASC", Parkir.class).getResultList();
                     
                     for (Parkir a : areas) {
-                        System.out.println(a.toString());
-                        
-                        List<Vehicle> vehiclesInArea = a.getVehicles();
-                        Collections.sort(vehiclesInArea, new Comparator<Vehicle>() {
-                            @Override
-                            public int compare(Vehicle v1, Vehicle v2) {
-                                return v1.getPlate_number().compareTo(v2.getPlate_number());
-                            }
-                        });
+                        // Mengambil daftar kendaraan nyata yang parkir di area ini, diurutkan Ascending berdasarkan nomor plat
+                        List<Vehicle> vehiclesInArea = em.createQuery(
+                            "SELECT v FROM Vehicle v WHERE v.parkingArea.name = :areaName ORDER BY v.plate_number ASC", Vehicle.class)
+                            .setParameter("areaName", a.getName())
+                            .getResultList();
 
+                        // Cetak nama area dengan format: nama allowed_type capacity|jumlah_terisi
+                        System.out.println(a.getName() + " " + a.getAllowed_type() + " " + a.getCapacity() + "|" + vehiclesInArea.size());
+                        
+                        // Cetak daftar kendaraan yang ada di dalam area tersebut
                         for (Vehicle v : vehiclesInArea) {
                             System.out.println(v.toString());
                         }

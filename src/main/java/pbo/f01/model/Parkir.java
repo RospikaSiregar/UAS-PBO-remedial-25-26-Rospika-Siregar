@@ -39,6 +39,6 @@ public class Parkir {
 
     @Override
     public String toString() {
-        return this.name + " " + this.allowed_type + " " + this.capacity + "|" + (this.vehicles != null ? this.vehicles.size() : 0);
+        return this.name + " " + this.allowed_type + " " + this.capacity;
     }
 }
