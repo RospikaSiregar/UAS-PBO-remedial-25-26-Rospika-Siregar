@@ -174,4 +174,3 @@ park#BK1234AB#Area Rektorat
 park#B123CD#Area Rektorat
 park#BB9988XY#Area GD722
 display-all
- 

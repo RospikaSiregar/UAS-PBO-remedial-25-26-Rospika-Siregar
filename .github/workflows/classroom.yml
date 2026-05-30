@@ -1,0 +1,259 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: 'Test Case 3.1: Tambah 1 Area'
+      id: test-case-3-1-tambah-1-area
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 3.1: Tambah 1 Area'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Area Parkir A#10#car
+          display-all
+        expected-output: Area Parkir A car 10|0
+        comparison-method: exact
+        timeout: 10
+        max-score: 4
+    - name: 'Test Case 3.2: Tambah Multi-Area Beda Tipe'
+      id: test-case-3-2-tambah-multi-area-beda-tipe
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 3.2: Tambah Multi-Area Beda Tipe'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Area Motor#15#motorcycle
+          area-add#Area Mobil#5#car
+          display-all
+        expected-output: |-
+          Area Mobil car 5|0
+          Area Motor motorcycle 15|0
+        comparison-method: exact
+        timeout: 10
+        max-score: 4
+    - name: 'Test Case 3.3: Tambah Area dengan Karakter Spesial/Angka'
+      id: test-case-3-3-tambah-area-dengan-karakter-spesial-angka
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 3.3: Tambah Area dengan Karakter Spesial/Angka'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Area-GD722!#20#motorcycle
+          display-all
+        expected-output: Area-GD722! motorcycle 20|0
+        comparison-method: exact
+        timeout: 10
+        max-score: 4
+    - name: 'Test Case 3.4: Registrasi Kendaraan Tunggal'
+      id: test-case-3-4-registrasi-kendaraan-tunggal
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 3.4: Registrasi Kendaraan Tunggal'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Area 1#1#car
+          vehicle-add#B123XX#Joko#car
+          park#B123XX#Area 1
+          display-all
+        expected-output: |-
+          Area 1 car 1|1
+          B123XX Joko car
+        comparison-method: exact
+        timeout: 10
+        max-score: 4
+    - name: 'Test Case 3.5: Registrasi Multi-Kendaraan'
+      id: test-case-3-5-registrasi-multi-kendaraan
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 3.5: Registrasi Multi-Kendaraan'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Area VIP#5#car
+          vehicle-add#B1AA#Andi#car
+          vehicle-add#B2BB#Budi#car
+          park#B1AA#Area VIP
+          park#B2BB#Area VIP
+          display-all
+        expected-output: |-
+          Area VIP car 5|2
+          B1AA Andi car
+          B2BB Budi car
+        comparison-method: exact
+        timeout: 10
+        max-score: 4
+    - name: 'Test Case 4.1: Parkir Sesuai Ketentuan (Motor)'
+      id: test-case-4-1-parkir-sesuai-ketentuan-motor
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 4.1: Parkir Sesuai Ketentuan (Motor)'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Parkir M#10#motorcycle
+          vehicle-add#M123#Cita#motorcycle
+          park#M123#Parkir M
+          display-all
+        expected-output: |-
+          Parkir M motorcycle 10|1
+          M123 Cita motorcycle
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: 'Test Case 4.2: Validasi Gagal - Beda Tipe Kendaraan'
+      id: test-case-4-2-validasi-gagal-beda-tipe-kendaraan
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 4.2: Validasi Gagal - Beda Tipe Kendaraan'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Parkir M#10#motorcycle
+          vehicle-add#C123#Dani#car
+          park#C123#Parkir M
+          display-all
+        expected-output: Parkir M motorcycle 10|0
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: 'Test Case 4.3: Validasi Gagal - Melebihi Kapasitas'
+      id: test-case-4-3-validasi-gagal-melebihi-kapasitas
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 4.3: Validasi Gagal - Melebihi Kapasitas'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Parkir Ketat#1#car
+          vehicle-add#A1#Eka#car
+          vehicle-add#A2#Fani#car
+          park#A1#Parkir Ketat
+          park#A2#Parkir Ketat
+          display-all
+        expected-output: |-
+          Parkir Ketat car 1|1
+          A1 Eka car
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: 'Test Case 4.4: Validasi Kendaraan Tidak Terdaftar'
+      id: test-case-4-4-validasi-kendaraan-tidak-terdaftar
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 4.4: Validasi Kendaraan Tidak Terdaftar'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Area X#5#car
+          park#GHOST99#Area X
+          display-all
+        expected-output: Area X car 5|0
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: 'Test Case 5.1: Sorting Area Ascending'
+      id: test-case-5-1-sorting-area-ascending
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 5.1: Sorting Area Ascending'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Zona Z#5#car
+          area-add#Zona C#5#car
+          area-add#Zona A#5#car
+          display-all
+        expected-output: |-
+          Zona A car 5|0
+          Zona C car 5|0
+          Zona Z car 5|0
+        comparison-method: exact
+        timeout: 10
+        max-score: 10
+    - name: 'Test Case 5.3: Sorting Kombinasi Area dan Kendaraan'
+      id: test-case-5-3-sorting-kombinasi-area-dan-kendaraan
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 5.3: Sorting Kombinasi Area dan Kendaraan'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#B Area#5#car
+          area-add#A Area#5#motorcycle
+          vehicle-add#B2#Dua#car
+          vehicle-add#B1#Satu#car
+          vehicle-add#M2#Dua#motorcycle
+          vehicle-add#M1#Satu#motorcycle
+          park#B2#B Area
+          park#B1#B Area
+          park#M2#A Area
+          park#M1#A Area
+          display-all
+        expected-output: |-
+          A Area motorcycle 5|2
+          M1 Satu motorcycle
+          M2 Dua motorcycle
+          B Area car 5|2
+          B1 Satu car
+          B2 Dua car
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: 'Test Case 5.4: Uji Publik Berdasarkan Contoh Soal'
+      id: test-case-5-4-uji-publik-berdasarkan-contoh-soal
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: 'Test Case 5.4: Uji Publik Berdasarkan Contoh Soal'
+        setup-command: mvn clean compile
+        command: mvn -q exec:java -Dexec.mainClass="pbo.f01.App"
+        input: |-
+          area-add#Area GD722#10#motorcycle
+          area-add#Area Rektorat#5#car
+          vehicle-add#BK1234AB#Chandro Pardede#car
+          vehicle-add#BB9988XY#Budi Santoso#motorcycle
+          vehicle-add#B123CD#Andi Wijaya#car
+          park#BK1234AB#Area Rektorat
+          park#B123CD#Area Rektorat
+          park#BB9988XY#Area GD722
+          display-all
+        expected-output: |-
+          Area GD722 motorcycle 10|1
+          BB9988XY Budi Santoso motorcycle
+          Area Rektorat car 5|2
+          B123CD Andi Wijaya car
+          BK1234AB Chandro Pardede car
+        comparison-method: exact
+        timeout: 10
+        max-score: 5
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TEST-CASE-3-1-TAMBAH-1-AREA_RESULTS: "${{steps.test-case-3-1-tambah-1-area.outputs.result}}"
+        TEST-CASE-3-2-TAMBAH-MULTI-AREA-BEDA-TIPE_RESULTS: "${{steps.test-case-3-2-tambah-multi-area-beda-tipe.outputs.result}}"
+        TEST-CASE-3-3-TAMBAH-AREA-DENGAN-KARAKTER-SPESIAL-ANGKA_RESULTS: "${{steps.test-case-3-3-tambah-area-dengan-karakter-spesial-angka.outputs.result}}"
+        TEST-CASE-3-4-REGISTRASI-KENDARAAN-TUNGGAL_RESULTS: "${{steps.test-case-3-4-registrasi-kendaraan-tunggal.outputs.result}}"
+        TEST-CASE-3-5-REGISTRASI-MULTI-KENDARAAN_RESULTS: "${{steps.test-case-3-5-registrasi-multi-kendaraan.outputs.result}}"
+        TEST-CASE-4-1-PARKIR-SESUAI-KETENTUAN-MOTOR_RESULTS: "${{steps.test-case-4-1-parkir-sesuai-ketentuan-motor.outputs.result}}"
+        TEST-CASE-4-2-VALIDASI-GAGAL-BEDA-TIPE-KENDARAAN_RESULTS: "${{steps.test-case-4-2-validasi-gagal-beda-tipe-kendaraan.outputs.result}}"
+        TEST-CASE-4-3-VALIDASI-GAGAL-MELEBIHI-KAPASITAS_RESULTS: "${{steps.test-case-4-3-validasi-gagal-melebihi-kapasitas.outputs.result}}"
+        TEST-CASE-4-4-VALIDASI-KENDARAAN-TIDAK-TERDAFTAR_RESULTS: "${{steps.test-case-4-4-validasi-kendaraan-tidak-terdaftar.outputs.result}}"
+        TEST-CASE-5-1-SORTING-AREA-ASCENDING_RESULTS: "${{steps.test-case-5-1-sorting-area-ascending.outputs.result}}"
+        TEST-CASE-5-3-SORTING-KOMBINASI-AREA-DAN-KENDARAAN_RESULTS: "${{steps.test-case-5-3-sorting-kombinasi-area-dan-kendaraan.outputs.result}}"
+        TEST-CASE-5-4-UJI-PUBLIK-BERDASARKAN-CONTOH-SOAL_RESULTS: "${{steps.test-case-5-4-uji-publik-berdasarkan-contoh-soal.outputs.result}}"
+      with:
+        runners: test-case-3-1-tambah-1-area,test-case-3-2-tambah-multi-area-beda-tipe,test-case-3-3-tambah-area-dengan-karakter-spesial-angka,test-case-3-4-registrasi-kendaraan-tunggal,test-case-3-5-registrasi-multi-kendaraan,test-case-4-1-parkir-sesuai-ketentuan-motor,test-case-4-2-validasi-gagal-beda-tipe-kendaraan,test-case-4-3-validasi-gagal-melebihi-kapasitas,test-case-4-4-validasi-kendaraan-tidak-terdaftar,test-case-5-1-sorting-area-ascending,test-case-5-3-sorting-kombinasi-area-dan-kendaraan,test-case-5-4-uji-publik-berdasarkan-contoh-soal
